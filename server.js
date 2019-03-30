@@ -1,11 +1,48 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const request = require('request');
+const cheerio = require('cheerio');
 const querystring = require('querystring');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
 const port = process.env.PORT || 5000;
 const apiKey = process.env.API_KEY || 'cb36077f3b2b273d83aba78dfaabc8e1';
+
+const transformToFriendly = (data) => {
+	data = data.replace(/\W/g,"");
+	data = data.toLowerCase();
+	return data;
+}
+
+const lyricsUrl = (artistName, songName) => {
+	var returnUrl = 'https://azlyrics.com/';
+	artistName = transformToFriendly(artistName);
+	songName = transformToFriendly(songName);
+	returnUrl += "lyrics/" + artistName + "/" + songName + ".html";
+	return returnUrl;
+}
+
+const getLyrics = (artistName, songName) => {
+  const url = lyricsUrl(artistName, songName);
+	return new Promise(r => {
+		var Response = request(url,(error,response,body) => {;
+			var $ = cheerio.load(body);
+			var lyrics;
+			if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
+				var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
+				var lyrics = lyricsDiv[2].data.substr(1)+"\n";
+				for(var index = 4; index < lyricsDiv.length; index+=2)
+				{
+					var line = lyricsDiv[index].data.substr(1)+"\n";
+					lyrics += line;
+				}
+				lyrics = lyrics.slice(0,-2);
+			}
+			r(lyrics);
+		});
+	});
+}
 
 app.get('/api/searchArtist/', (req, res) => {
   const data = req.query;
@@ -26,6 +63,7 @@ app.get('/api/searchArtist/', (req, res) => {
 
 app.get('/api/topSongs/', (req, res) => {
   const data = req.query;
+  const lyrics = {};
   let url = songsSearchUrl;
   for (const key in data) url += (key + '=' + data[key] + '&');
   url += 'apikey=' + apiKey;
@@ -33,7 +71,21 @@ app.get('/api/topSongs/', (req, res) => {
   fetch(url)
     .then(response => {
       response.json().then(json => {
-        res.send({ songs:  json.message.body.track_list });
+        const songs = json.message.body.track_list;
+
+        const promises = songs.map(song => getLyrics(song.track.artist_name, song.track.track_name));
+
+        Promise.all(promises)
+          .then(results => {
+            songs.forEach((song, index) => lyrics[song.track.track_id] = results[index]);
+            res.send({
+              songs:  songs,
+              lyrics: lyrics
+            });
+          })
+          .catch(error => {
+            console.log(error);
+          })
       })
     })
     .catch(error => {

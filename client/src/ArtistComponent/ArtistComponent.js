@@ -9,7 +9,8 @@ class ArtistComponent extends Component {
     super(props);
 
     this.state = {
-      songs: []
+      songs: [],
+      lyrics: {}
     };
   }
 
@@ -32,6 +33,7 @@ class ArtistComponent extends Component {
         response.json().then(json => {
           this.setState({
             songs: json.songs,
+            lyrics: json.lyrics,
           });
         })
       })
@@ -42,7 +44,7 @@ class ArtistComponent extends Component {
 
   render() {
     const { artist } = this.props;
-    const { songs } = this.state;
+    const { songs, lyrics } = this.state;
 
     return (
       <div>
