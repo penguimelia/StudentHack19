@@ -2,8 +2,17 @@ import React, { Component } from 'react';
 import querystring from 'querystring';
 import ChartComponent from '../ChartComponent/ChartComponent.js';
 import './ArtistComponent.css';
+// import './ArtistComponent.css';
+import ReactWordcloud from 'react-wordcloud';
 
 const baseUrl = '/api/topSongs?';
+
+const words = [
+  { text: "hello", value: 3 },
+  { text: "world", value: 12.5 },
+  { text: "github", value: 1 },
+  { text: "code", value: 1 }
+];
 
 class ArtistComponent extends Component {
   constructor(props) {
@@ -67,6 +76,7 @@ class ArtistComponent extends Component {
         ))}
 
         {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
+        <ReactWordcloud words={words} />
       </div>
     )
   }

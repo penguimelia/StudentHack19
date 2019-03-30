@@ -62,7 +62,15 @@ const writeToCache = (data, lyrics, songs) => {
 }
 
 const sanitizeString = (str) => {
-  return str.replace(/\n/g, ' ').replace(/ {1,}/g,' ').split(' ');
+  str = str.replace(/\n/g, ' ');
+  str = str.toLowerCase(str);
+  str = str.replace(/[^a-zA-Z]/g, ' ');
+  str = str.replace(/^\w{1}$/g, '');
+  str = str.replace(/ {1,}/g,' ');
+  str = str.replace(/\b[a-zA-z]{1,2}\b/g,' ');
+  str = sw.removeStopwords(str.split(' '));
+  
+  return str;
 }
 
 app.get('/api/searchArtist/', (req, res) => {
@@ -110,7 +118,7 @@ app.get('/api/topSongs/', (req, res) => {
         Promise.all(promises)
           .then(results => {
             songs.forEach((song, index) =>
-              lyrics[song.track.track_id] = sw.removeStopwords(sanitizeString(results[index]))
+              lyrics[song.track.track_id] = sanitizeString(results[index])
             );
             writeToCache(data, lyrics, songs);
             res.send({

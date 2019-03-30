@@ -10,6 +10,7 @@
     "azlyrics": "^2.0.0",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
+    "natural": "^0.6.3",
     "node-fetch": "^2.3.0",
     "querystring": "^0.2.0",
     "stemr": "^1.0.0",
