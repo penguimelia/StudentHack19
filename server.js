@@ -60,6 +60,10 @@ const writeToCache = (data, lyrics, songs) => {
   });
 }
 
+const sanitizeString = (str) => {
+  return str.replace(/\n/g, ' ').replace(/ {1,}/g,' ').split(' ');
+}
+
 app.get('/api/searchArtist/', (req, res) => {
   const data = req.query;
   let url = artistSearchUrl;
@@ -105,7 +109,7 @@ app.get('/api/topSongs/', (req, res) => {
         Promise.all(promises)
           .then(results => {
             songs.forEach((song, index) =>
-              lyrics[song.track.track_id] = sw.removeStopwords(results[index].replace(/\n/g, ' ').replace(/ {1,}/g,' ').split(' '))
+              lyrics[song.track.track_id] = sw.removeStopwords(sanitizeString(results[index]))
             );
             writeToCache(data, lyrics, songs);
             res.send({
