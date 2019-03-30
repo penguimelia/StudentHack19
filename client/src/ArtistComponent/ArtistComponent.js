@@ -1,0 +1,60 @@
+import React, { Component } from 'react';
+import querystring from 'querystring';
+// import './ArtistComponent.css';
+
+const baseUrl = '/api/topSongs?';
+
+class ArtistComponent extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      songs: []
+    };
+  }
+
+  getMostPopularSongs = async (artist) => {
+
+  };
+
+  componentDidMount() {
+    const data = {
+      f_artist_id: this.props.artist.artist_id,
+      page_size: 5,
+      page: 1,
+      s_track_rating: 'desc',
+      f_has_lyrics: 1,
+    };
+    const url = baseUrl + querystring.stringify(data);
+
+    fetch(url)
+      .then(response => {
+        response.json().then(json => {
+          this.setState({
+            songs: json.songs,
+          });
+        })
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  render() {
+    const { artist } = this.props;
+    const { songs } = this.state;
+
+    return (
+      <div>
+        {artist.artist_name}
+        {songs && songs.length && songs.map(({ track }, index) => (
+          <div key={track.track_id}>
+            <p>{track.track_name} | {track.album_name}</p><br/>
+          </div>
+        ))}
+      </div>
+    )
+  }
+}
+
+export default ArtistComponent;
