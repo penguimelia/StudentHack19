@@ -1,5 +1,5 @@
 import React from 'react';
-import Highcharts from 'highcharts'
+import Highcharts from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 // import './ChartComponent.css';
 
@@ -33,14 +33,23 @@ const ChartComponent = ({ lyrics, artist }) => {
   const chart = {
     chart: {
       type: 'bar',
-      width: 800,
-      height: 1000
+      width: 500,
+      height: 500
     },
     title: {
       text: 'Words ' + artist.artist_name + ' uses'
     },
     xAxis: {
-      categories: freqChart.map(pair => pair[0])
+      categories: freqChart.map(pair => pair[0]),
+      min: 0,
+      max: 20,
+      scrollbar: {
+        enabled: true
+      }
+    },
+    yAxis: {
+      min: 0,
+      max: Math.max(...freqChart.map(pair => pair[1]))
     },
     series: [{
       name: artist.artist_name,
