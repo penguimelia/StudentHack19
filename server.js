@@ -29,16 +29,20 @@ const lyricsUrl = (artistName, songName) => {
 const getLyrics = (artistName, songName) => {
   const url = lyricsUrl(artistName, songName);
 	return new Promise(r => {
-		var Response = request(url,(error,response,body) => {;
+		var Response = request(url, (error, response, body) => {
 			var $ = cheerio.load(body);
 			var lyrics = '';
 			if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
 				var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
-				var lyrics = lyricsDiv[2].data.substr(1)+"\n";
-				for(var index = 4; index < lyricsDiv.length; index+=2)
-				{
-					var line = lyricsDiv[index].data.substr(1)+"\n";
-					lyrics += line;
+				if (lyricsDiv && lyricsDiv.length > 0) {
+					var lyrics = lyricsDiv[2].data.substr(1)+"\n";
+					for(var index = 4; index < lyricsDiv.length; index+=2)
+					{
+						if (lyricsDiv[index].data) {
+							var line = lyricsDiv[index].data.substr(1)+"\n";
+							lyrics += line;
+						}
+					}
 				}
 				lyrics = lyrics.slice(0,-2);
 			}
@@ -62,7 +66,15 @@ const writeToCache = (data, lyrics, songs) => {
 }
 
 const sanitizeString = (str) => {
-  return str.replace(/\n/g, ' ').replace(/ {1,}/g,' ').split(' ');
+  str = str.replace(/\n/g, ' ');
+  str = str.toLowerCase(str);
+  str = str.replace(/[^a-zA-Z]/g, ' ');
+  str = str.replace(/^\w{1}$/g, '');
+  str = str.replace(/\b[a-zA-z]{1,2}\b/g,' ');
+  str = str.replace(/ {1,}/g,' ');
+  str = sw.removeStopwords(str.split(' '));
+  
+  return str;
 }
 
 app.get('/api/searchArtist/', (req, res) => {
@@ -110,7 +122,7 @@ app.get('/api/topSongs/', (req, res) => {
         Promise.all(promises)
           .then(results => {
             songs.forEach((song, index) =>
-              lyrics[song.track.track_id] = sw.removeStopwords(sanitizeString(results[index]))
+              lyrics[song.track.track_id] = sanitizeString(results[index])
             );
             writeToCache(data, lyrics, songs);
             res.send({

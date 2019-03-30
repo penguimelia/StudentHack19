@@ -3,8 +3,17 @@ import querystring from 'querystring';
 import ReactLoading from 'react-loading';
 import ChartComponent from '../ChartComponent/ChartComponent.js';
 import './ArtistComponent.css';
+// import './ArtistComponent.css';
+import ReactWordcloud from 'react-wordcloud';
 
 const baseUrl = '/api/topSongs?';
+
+const words = [
+  { text: "hello", value: 3 },
+  { text: "world", value: 12.5 },
+  { text: "github", value: 1 },
+  { text: "code", value: 1 }
+];
 
 class ArtistComponent extends Component {
   constructor(props) {
@@ -66,10 +75,12 @@ class ArtistComponent extends Component {
         <h2 className='artistName'>{artist.artist_name}</h2>
         {songs.map(({ track }, index) => (
           <div key={track.track_id}>
-            <p>{track.track_name} | {track.album_name}</p><br/>
+            <p className='songAlbum'>{track.track_name} | {track.album_name}</p><br/>
           </div>
         ))}
 
+        {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
+        
         {<ChartComponent lyrics={lyrics} artist={artist}/>}
       </div>
     )
