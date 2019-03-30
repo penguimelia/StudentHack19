@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const request = require('request');
 const cheerio = require('cheerio');
 const querystring = require('querystring');
+const fs = require('fs');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
@@ -44,6 +45,20 @@ const getLyrics = (artistName, songName) => {
 	});
 }
 
+const writeToCache = (data, lyrics, songs) => {
+  const cache = JSON.parse(fs.readFileSync('cache.txt', 'utf8'));
+  const entry = {
+    'songs': songs,
+    'lyrics': lyrics
+  };
+
+  cache[data.f_artist_id] = entry;
+
+  fs.writeFile('cache.txt', JSON.stringify(cache), 'utf8', (err) => {
+    if (err) throw err;
+  });
+}
+
 app.get('/api/searchArtist/', (req, res) => {
   const data = req.query;
   let url = artistSearchUrl;
@@ -63,6 +78,16 @@ app.get('/api/searchArtist/', (req, res) => {
 
 app.get('/api/topSongs/', (req, res) => {
   const data = req.query;
+  const cache = JSON.parse(fs.readFileSync('cache.txt', 'utf8'));
+
+  if (cache[data.f_artist_id]) {
+    res.send({
+      songs:  cache[data.f_artist_id].songs,
+      lyrics: cache[data.f_artist_id].lyrics
+    });
+  }
+
+
   const lyrics = {};
   let url = songsSearchUrl;
   for (const key in data) url += (key + '=' + data[key] + '&');
@@ -78,6 +103,7 @@ app.get('/api/topSongs/', (req, res) => {
         Promise.all(promises)
           .then(results => {
             songs.forEach((song, index) => lyrics[song.track.track_id] = results[index]);
+            writeToCache(data, lyrics, songs);
             res.send({
               songs:  songs,
               lyrics: lyrics

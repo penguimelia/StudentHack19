@@ -18,7 +18,7 @@ class ArtistComponent extends Component {
 
   };
 
-  componentDidMount() {
+  updateComponent() {
     const data = {
       f_artist_id: this.props.artist.artist_id,
       page_size: 5,
@@ -40,6 +40,16 @@ class ArtistComponent extends Component {
       .catch(error => {
         console.log(error);
       });
+  }
+
+  componentDidMount() {
+    this.updateComponent();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.artist.artist_id === prevProps.artist.artist_id)
+      return;
+    this.updateComponent();
   }
 
   render() {
