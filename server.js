@@ -2,6 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const request = require('request');
 const cheerio = require('cheerio');
+const sw = require('stopword');
 const querystring = require('querystring');
 const fs = require('fs');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
@@ -102,7 +103,7 @@ app.get('/api/topSongs/', (req, res) => {
 
         Promise.all(promises)
           .then(results => {
-            songs.forEach((song, index) => lyrics[song.track.track_id] = results[index]);
+            songs.forEach((song, index) => lyrics[song.track.track_id] = sw.removeStopwords(results[index].replace(new RegExp('\n', 'g'), ' ').split(' ')));
             writeToCache(data, lyrics, songs);
             res.send({
               songs:  songs,
