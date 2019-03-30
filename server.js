@@ -9,7 +9,7 @@ const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
 const port = process.env.PORT || 5000;
-const apiKey = process.env.API_KEY || 'cb36077f3b2b273d83aba78dfaabc8e1';
+const apiKey = process.env.API_KEY || '52b9f0ea425b6af5aa36aecc45965535';
 
 const transformToFriendly = (data) => {
 	data = data.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
