@@ -29,16 +29,20 @@ const lyricsUrl = (artistName, songName) => {
 const getLyrics = (artistName, songName) => {
   const url = lyricsUrl(artistName, songName);
 	return new Promise(r => {
-		var Response = request(url,(error,response,body) => {;
+		var Response = request(url, (error, response, body) => {
 			var $ = cheerio.load(body);
 			var lyrics = '';
 			if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
 				var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
-				var lyrics = lyricsDiv[2].data.substr(1)+"\n";
-				for(var index = 4; index < lyricsDiv.length; index+=2)
-				{
-					var line = lyricsDiv[index].data.substr(1)+"\n";
-					lyrics += line;
+				if (lyricsDiv && lyricsDiv.length > 0) {
+					var lyrics = lyricsDiv[2].data.substr(1)+"\n";
+					for(var index = 4; index < lyricsDiv.length; index+=2)
+					{
+						if (lyricsDiv[index].data) {
+							var line = lyricsDiv[index].data.substr(1)+"\n";
+							lyrics += line;
+						}
+					}
 				}
 				lyrics = lyrics.slice(0,-2);
 			}

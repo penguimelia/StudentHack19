@@ -66,7 +66,7 @@ class ArtistComponent extends Component {
         <h2 className='artistName'>{artist.artist_name}</h2>
         {songs.map(({ track }, index) => (
           <div key={track.track_id}>
-            <p>{track.track_name} | {track.album_name}</p><br/>
+            <p className='songAlbum'>{track.track_name} | {track.album_name}</p><br/>
           </div>
         ))}
 
