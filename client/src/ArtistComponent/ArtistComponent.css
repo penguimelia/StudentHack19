@@ -1,7 +1,14 @@
-.artistName {
-
+.artistComponent {
+  
 }
 
 .songAlbum {
   margin: 0;
+}
+
+.songsInfo {
+  max-height: 20rem;
+  overflow: scroll;
+  margin-bottom: 6rem;
+  margin-top: 3rem;
 }

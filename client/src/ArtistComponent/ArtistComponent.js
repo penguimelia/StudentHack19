@@ -52,7 +52,7 @@ class ArtistComponent extends Component {
   updateComponent() {
     const data = {
       f_artist_id: this.props.artist.artist_id,
-      page_size: 20,
+      page_size: 50,
       page: 1,
       s_track_rating: 'desc',
       f_has_lyrics: 1,
@@ -87,7 +87,8 @@ class ArtistComponent extends Component {
     const { artist } = this.props;
     const { songs, lyrics } = this.state;
 
-    if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length)
+    if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length
+        || songs[0].track.artist_id !== artist.artist_id)
       return (<ReactLoading />);
 
     const lyricsFreq = getLyricsFreq(lyrics);
@@ -96,15 +97,17 @@ class ArtistComponent extends Component {
     const failedSongs = Object.keys(lyrics).filter(key => lyrics[key].length === 1);
 
     return (
-      <div>
+      <div className='artistComponent'>
         <h2 className='artistName'>{artist.artist_name}</h2>
         <p>{'Songs that failed: ' + failedSongs.length}</p>
         <p>{'Number of words: ' + numberOfWords + ' | Number of unique words: ' + numberOfUniqueWords}</p>
-        {songs.map(({ track }, index) => (
-          <div key={track.track_id}>
-            <p className='songAlbum'>{track.track_name} | {track.album_name}</p><br/>
-          </div>
-        ))}
+        <div className='songsInfo'>
+          {songs.map(({ track }, index) => (
+            <div key={track.track_id}>
+              <p className='songAlbum'>{track.track_name} | {track.album_name}</p><br/>
+            </div>
+          ))}
+        </div>
 
         {<ChartComponent freq={lyricsFreq} artist={artist}/>}
       </div>

@@ -11,7 +11,6 @@ const ChartComponent = ({ freq, artist }) => {
   const barChart = {
     chart: {
       type: 'bar',
-      width: 500,
       height: 500,
       scrollablePlotArea: true,
     },
@@ -43,7 +42,6 @@ const ChartComponent = ({ freq, artist }) => {
   const bubbleChart = {
     chart: {
       type: 'packedbubble',
-      width: 500,
       height: 500
     },
     title: {
