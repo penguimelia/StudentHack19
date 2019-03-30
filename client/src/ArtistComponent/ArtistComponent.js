@@ -15,6 +15,26 @@ const words = [
   { text: "code", value: 1 }
 ];
 
+const getLyricsFreq = lyrics => {
+  const freq = {};
+
+  Object.values(lyrics).forEach((lyric) => {
+    lyric.forEach((word) => {
+      if (freq[word] > 0) {
+        freq[word]++;
+      } else {
+        freq[word] = 1;
+      }
+    });
+  });
+
+  const sorted = Object.keys(freq)
+    .map(word => [word, freq[word]])
+    .sort((first, second) => second[1] - first[1])
+
+  return sorted;
+}
+
 class ArtistComponent extends Component {
   constructor(props) {
     super(props);
@@ -70,16 +90,21 @@ class ArtistComponent extends Component {
     if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length)
       return (<ReactLoading />);
 
+    const lyricsFreq = getLyricsFreq(lyrics);
+    const numberOfWords = lyricsFreq.reduce((total, pair) => pair[1] + total, 0);
+    const numberOfUniqueWords = Object.keys(lyricsFreq).length;
+
     return (
       <div>
         <h2 className='artistName'>{artist.artist_name}</h2>
+        <p>{'Number of words: ' + numberOfWords + ' | Number of unique words: ' + numberOfUniqueWords}</p>
         {songs.map(({ track }, index) => (
           <div key={track.track_id}>
             <p className='songAlbum'>{track.track_name} | {track.album_name}</p><br/>
           </div>
         ))}
 
-        {<ChartComponent lyrics={lyrics} artist={artist}/>}
+        {<ChartComponent freq={lyricsFreq} artist={artist}/>}
       </div>
     )
   }

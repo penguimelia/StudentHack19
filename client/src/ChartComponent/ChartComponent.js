@@ -5,35 +5,9 @@ import HighchartsReact from 'highcharts-react-official'
 // import './ChartComponent.css';
 
 More(Highcharts)
-const lyricFreq = lyrics => {
-  const freq = [];
 
-  Object.values(lyrics).forEach((song) => {
-    song.forEach((key) => {
-      if (freq.hasOwnProperty(key)) {
-        freq[key]++;
-      } else {
-        freq[key] = 1;
-      }
-    });
-  });
-
-  const sorted = Object.keys(freq).map(function(key) {
-      return [key, freq[key]];
-    }).sort(function(first, second) {
-      return second[1] - first[1];
-    });
-
-  return sorted;
-}
-
-const ChartComponent = ({ lyrics, artist }) => {
-  if (!lyrics || !Object.keys(lyrics).length)
-    return;
-
+const ChartComponent = ({ freq, artist }) => {
   const title = 'Words ' + artist.artist_name + ' uses';
-
-  const freq = lyricFreq(lyrics);
   const barChart = {
     chart: {
       type: 'bar',
@@ -58,12 +32,13 @@ const ChartComponent = ({ lyrics, artist }) => {
     }]
   };
 
-  var objArray = []
-  freq.forEach(pair => {
-    objArray.push({name: pair[0], value: pair[1]})
-  })
+  const topFreq = freq.slice(0, 30);
+  const objArray = [];
+  topFreq.forEach(pair => {
+    objArray.push({name: pair[0], value: pair[1]});
+  });
 
-  console.log(objArray);
+
 
   const bubbleChart = {
     chart: {
@@ -71,7 +46,13 @@ const ChartComponent = ({ lyrics, artist }) => {
       width: 500,
       height: 500
     },
-    title: { text: title },
+    title: {
+      text: title
+    },
+    tooltip: {
+        useHTML: true,
+        pointFormat: '<b>{point.name}:</b> {point.y}'
+    },
     plotOptions: {
       packedbubble: {
         dataLabels: {
@@ -80,15 +61,16 @@ const ChartComponent = ({ lyrics, artist }) => {
           filter: {
             property: 'y',
             operator: '>',
-            value: 5
+            value: 10
+          },
+          style: {
+            color: 'black',
+            textOutline: 'none',
+            fontWeight: 'normal'
           },
         },
-        style: {
-          color: 'black',
-          textOutline: 'none',
-          fontWeight: 'normal'
-        },
-      }
+        minPointSize: 5,
+      },
     },
     series: [{
       name: artist.artist_name,
@@ -102,6 +84,7 @@ const ChartComponent = ({ lyrics, artist }) => {
         highcharts={Highcharts}
         options={barChart}
       />
+      <br />
       <HighchartsReact
         highcharts={Highcharts}
         options={bubbleChart}
