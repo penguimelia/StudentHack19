@@ -12,6 +12,7 @@ const port = process.env.PORT || 5000;
 const apiKey = process.env.API_KEY || 'cb36077f3b2b273d83aba78dfaabc8e1';
 
 const transformToFriendly = (data) => {
+	data = data.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 	data = data.replace(/\W/g,"");
 	data = data.toLowerCase();
 	return data;

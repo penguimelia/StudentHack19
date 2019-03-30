@@ -34,7 +34,8 @@ const ChartComponent = ({ lyrics, artist }) => {
     chart: {
       type: 'bar',
       width: 500,
-      height: 500
+      height: 500,
+      scrollablePlotArea: true,
     },
     title: {
       text: 'Words ' + artist.artist_name + ' uses'
@@ -43,9 +44,6 @@ const ChartComponent = ({ lyrics, artist }) => {
       categories: freqChart.map(pair => pair[0]),
       min: 0,
       max: 20,
-      scrollbar: {
-        enabled: true
-      }
     },
     yAxis: {
       min: 0,
