@@ -93,10 +93,12 @@ class ArtistComponent extends Component {
     const lyricsFreq = getLyricsFreq(lyrics);
     const numberOfWords = lyricsFreq.reduce((total, pair) => pair[1] + total, 0);
     const numberOfUniqueWords = Object.keys(lyricsFreq).length;
+    const failedSongs = Object.keys(lyrics).filter(key => lyrics[key].length === 1);
 
     return (
       <div>
         <h2 className='artistName'>{artist.artist_name}</h2>
+        <p>{'Songs that failed: ' + failedSongs.length}</p>
         <p>{'Number of words: ' + numberOfWords + ' | Number of unique words: ' + numberOfUniqueWords}</p>
         {songs.map(({ track }, index) => (
           <div key={track.track_id}>

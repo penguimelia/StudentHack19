@@ -1,7 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const request = require('request');
-const cheerio = require('cheerio');
 const sw = require('stopword');
 const querystring = require('querystring');
 const simplegetlyrics = require('simple-get-lyrics');
@@ -12,50 +11,6 @@ const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
 const port = process.env.PORT || 5000;
 const apiKey = process.env.API_KEY || '52b9f0ea425b6af5aa36aecc45965535';
-
-const transformToFriendly = (data) => {
-	data = data.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-	data = data.replace(/\W/g,"");
-	data = data.toLowerCase();
-	return data;
-}
-
-const lyricsUrl = (artistName, songName) => {
-	var returnUrl = 'https://azlyrics.com/';
-	artistName = transformToFriendly(artistName);
-	songName = transformToFriendly(songName);
-	returnUrl += "lyrics/" + artistName + "/" + songName + ".html";
-	return returnUrl;
-}
-
-const getLyrics = (artistName, songName) => {
-  const url = lyricsUrl(artistName, songName);
-	return new Promise(r => {
-		var Response = request(url, (error, response, body) => {
-			var $ = cheerio.load(body);
-			var lyrics = '';
-			try {
-				if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
-					var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
-					if (lyricsDiv && lyricsDiv.length > 0) {
-						var lyrics = lyricsDiv[2].data.substr(1)+"\n";
-						for(var index = 4; index < lyricsDiv.length; index+=2)
-						{
-							if (lyricsDiv[index].data) {
-								var line = lyricsDiv[index].data.substr(1)+"\n";
-								lyrics += line;
-							}
-						}
-					}
-					lyrics = lyrics.slice(0,-2);
-				}
-			} catch (error) {
-				console.log(url);
-			}
-			r(lyrics);
-		});
-	});
-}
 
 const writeToCache = (data, lyrics, songs) => {
   const cache = JSON.parse(fs.readFileSync('cache.txt', 'utf8'));
@@ -72,6 +27,7 @@ const writeToCache = (data, lyrics, songs) => {
 }
 
 const sanitizeString = (str) => {
+	if (!str) return [''];
 	// Remove accents
 	str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
@@ -134,7 +90,13 @@ app.get('/api/topSongs/', (req, res) => {
       response.json().then(json => {
         const songs = json.message.body.track_list;
 
-        const promises = songs.map(song => simplegetlyrics.search(song.track.artist_name, song.track.track_name));
+        const promises = songs.map(song =>
+					simplegetlyrics.search(song.track.artist_name, song.track.track_name)
+					.catch(err => {
+						console.log(url);
+						return '';
+					})
+				);
 
         Promise.all(promises)
           .then(results => {
