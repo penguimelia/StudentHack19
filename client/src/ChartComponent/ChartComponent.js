@@ -1,23 +1,25 @@
 import React from 'react';
 import Highcharts from 'highcharts/highstock'
+import More from 'highcharts/highcharts-more'
 import HighchartsReact from 'highcharts-react-official'
 // import './ChartComponent.css';
 
+More(Highcharts)
 const lyricFreq = lyrics => {
-  const freqChart = [];
+  const freq = [];
 
   Object.values(lyrics).forEach((song) => {
     song.forEach((key) => {
-      if (freqChart.hasOwnProperty(key)) {
-        freqChart[key]++;
+      if (freq.hasOwnProperty(key)) {
+        freq[key]++;
       } else {
-        freqChart[key] = 1;
+        freq[key] = 1;
       }
     });
   });
 
-  const sorted = Object.keys(freqChart).map(function(key) {
-      return [key, freqChart[key]];
+  const sorted = Object.keys(freq).map(function(key) {
+      return [key, freq[key]];
     }).sort(function(first, second) {
       return second[1] - first[1];
     });
@@ -29,37 +31,83 @@ const ChartComponent = ({ lyrics, artist }) => {
   if (!lyrics || !Object.keys(lyrics).length)
     return;
 
-  const freqChart = lyricFreq(lyrics);
-  const chart = {
+  const title = 'Words ' + artist.artist_name + ' uses';
+
+  const freq = lyricFreq(lyrics);
+  const barChart = {
     chart: {
       type: 'bar',
       width: 500,
       height: 500,
       scrollablePlotArea: true,
     },
-    title: {
-      text: 'Words ' + artist.artist_name + ' uses'
-    },
+    title: { text: title },
     xAxis: {
-      categories: freqChart.map(pair => pair[0]),
+      categories: freq.map(pair => pair[0]),
       min: 0,
       max: 20,
+      scrollbar: { enabled: true }
     },
     yAxis: {
       min: 0,
-      max: Math.max(...freqChart.map(pair => pair[1]))
+      max: Math.max(...freq.map(pair => pair[1]))
     },
     series: [{
       name: artist.artist_name,
-      data: freqChart.map(pair => pair[1])
+      data: freq.map(pair => pair[1])
+    }]
+  };
+
+  var objArray = []
+  freq.forEach(pair => {
+    objArray.push({name: pair[0], value: pair[1]})
+  })
+
+  console.log(objArray);
+
+  const bubbleChart = {
+    chart: {
+      type: 'packedbubble',
+      width: 500,
+      height: 500
+    },
+    title: { text: title },
+    plotOptions: {
+      packedbubble: {
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}',
+          filter: {
+            property: 'y',
+            operator: '>',
+            value: 5
+          },
+        },
+        style: {
+          color: 'black',
+          textOutline: 'none',
+          fontWeight: 'normal'
+        },
+      }
+    },
+    series: [{
+      name: artist.artist_name,
+      data: objArray
     }]
   };
 
   return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={chart}
-    />
+    <div>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={barChart}
+      />
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={bubbleChart}
+      />
+    </div>
+
   );
 };
 
