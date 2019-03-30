@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import querystring from 'querystring';
-// import './ArtistComponent.css';
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import ChartComponent from '../ChartComponent/ChartComponent.js';
+import './ArtistComponent.css';
 
 const baseUrl = '/api/topSongs?';
 
@@ -54,69 +53,20 @@ class ArtistComponent extends Component {
     this.updateComponent();
   }
 
-  lyricFreq = () => {
-    var freqChart = [];
-
-    Object.values(this.state.lyrics).forEach((song) => {
-      song.forEach((key) => {
-        if (freqChart.hasOwnProperty(key)) {
-          freqChart[key]++;
-        } else {
-          freqChart[key] = 1;
-        }
-      });
-    })
-
-    var sorted = Object.keys(freqChart).map(function(key) {
-        return [key, freqChart[key]];
-      }).sort(function(first, second) {
-        return second[1] - first[1];
-      });
-
-    return sorted;
-  }
-
-  createFreqChart = () => {
-    var freqChart = this.lyricFreq();
-
-    var chart = {
-      chart: {
-        type: 'bar',
-        width: 800,
-        height: 1000
-      },
-      title: {
-        text: 'Words ' + this.props.artist.artist_name + ' uses'
-      },
-      xAxis: {
-        categories: freqChart.map(pair => pair[0])
-      },
-      series: [{
-        name: this.props.artist.artist_name,
-        data: freqChart.map(pair => pair[1])
-      }]
-    };
-
-    return <HighchartsReact
-      highcharts={Highcharts}
-      options={chart}
-    />;
-  }
-
   render() {
     const { artist } = this.props;
     const { songs, lyrics } = this.state;
 
     return (
       <div>
-        {artist.artist_name}
+        <h2 className='artistName'>{artist.artist_name}</h2>
         {songs && songs.length && songs.map(({ track }, index) => (
           <div key={track.track_id}>
             <p>{track.track_name} | {track.album_name}</p><br/>
           </div>
         ))}
 
-        {Object.keys(lyrics).length > 0 ? this.createFreqChart() : null}
+        {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
       </div>
     )
   }

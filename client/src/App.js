@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 import SearchComponent from './SearchComponent/SearchComponent';
 import ArtistComponent from './ArtistComponent/ArtistComponent';
@@ -24,13 +24,12 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <SearchComponent onSuggestionSelected={this.onSuggestionSelected} />
-          {artist && (
-            <ArtistComponent artist={artist}/>
-          )}
-        </header>
+        <img src={logo} className="App-logo" alt="logo" />
+        <h1>Lyrics Analyser</h1>
+        <SearchComponent onSuggestionSelected={this.onSuggestionSelected} />
+        {artist && (
+          <ArtistComponent artist={artist}/>
+        )}
       </div>
     );
   }
