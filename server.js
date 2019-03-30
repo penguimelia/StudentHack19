@@ -70,8 +70,8 @@ const sanitizeString = (str) => {
   str = str.toLowerCase(str);
   str = str.replace(/[^a-zA-Z]/g, ' ');
   str = str.replace(/^\w{1}$/g, '');
-  str = str.replace(/ {1,}/g,' ');
   str = str.replace(/\b[a-zA-z]{1,2}\b/g,' ');
+  str = str.replace(/ {1,}/g,' ');
   str = sw.removeStopwords(str.split(' '));
   
   return str;

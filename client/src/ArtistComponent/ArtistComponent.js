@@ -80,7 +80,7 @@ class ArtistComponent extends Component {
         ))}
 
         {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
-        <ReactWordcloud words={words} />
+        
         {<ChartComponent lyrics={lyrics} artist={artist}/>}
       </div>
     )
