@@ -27,26 +27,21 @@ const writeToCache = (data, lyrics, songs) => {
 }
 
 const sanitizeString = (str) => {
+
 	if (!str) return [''];
-	// Remove accents
-	str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-
-	// Remove extra spaces and apostrophes
-	str = textcleaner(str).condense().removeApostrophes().valueOf();
-
-	// To lower case
+  //remove new line symbols
+  str = str.replace(/\n/g, ' ');
+  //To lower case
   str = str.toLowerCase(str);
-
-	// Remove weird chars
-	str = textcleaner(str).removeChars().valueOf();
-
-  str = str.replace(/^\w{1}$/g, '');
+  //Remove non alphabetical chars
+  str = str.replace(/[^a-zA-Z]/g, ' ');
+  //remove single letter words
   str = str.replace(/\b[a-zA-z]{1,2}\b/g,' ');
+  //remove multiple spaces
   str = str.replace(/ {1,}/g,' ');
-
-	// Remove stopwords
+  //remove stopwords
   str = sw.removeStopwords(str.split(' '));
-
+  
   return str;
 }
 
