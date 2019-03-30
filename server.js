@@ -5,6 +5,7 @@ const cheerio = require('cheerio');
 const sw = require('stopword');
 const querystring = require('querystring');
 const fs = require('fs');
+const textcleaner = require('text-cleaner');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
@@ -66,14 +67,25 @@ const writeToCache = (data, lyrics, songs) => {
 }
 
 const sanitizeString = (str) => {
-  str = str.replace(/\n/g, ' ');
+	// Remove accents
+	str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+	// Remove extra spaces and apostrophes
+	str = textcleaner(str).condense().removeApostrophes().valueOf();
+
+	// To lower case
   str = str.toLowerCase(str);
-  str = str.replace(/[^a-zA-Z]/g, ' ');
+
+	// Remove weird chars
+	str = textcleaner(str).removeChars().valueOf();
+
   str = str.replace(/^\w{1}$/g, '');
   str = str.replace(/\b[a-zA-z]{1,2}\b/g,' ');
   str = str.replace(/ {1,}/g,' ');
+
+	// Remove stopwords
   str = sw.removeStopwords(str.split(' '));
-  
+
   return str;
 }
 

@@ -14,7 +14,8 @@
     "node-fetch": "^2.3.0",
     "querystring": "^0.2.0",
     "stemr": "^1.0.0",
-    "stopword": "^0.2.1"
+    "stopword": "^0.2.1",
+    "text-cleaner": "^0.3.0"
   },
   "devDependencies": {
     "concurrently": "^3.5.0"

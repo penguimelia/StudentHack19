@@ -79,8 +79,6 @@ class ArtistComponent extends Component {
           </div>
         ))}
 
-        {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
-        
         {<ChartComponent lyrics={lyrics} artist={artist}/>}
       </div>
     )
