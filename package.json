@@ -13,6 +13,7 @@
     "natural": "^0.6.3",
     "node-fetch": "^2.3.0",
     "querystring": "^0.2.0",
+    "simple-get-lyrics": "0.0.4",
     "stemr": "^1.0.0",
     "stopword": "^0.2.1",
     "text-cleaner": "^0.3.0"

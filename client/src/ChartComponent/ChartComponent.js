@@ -1,7 +1,7 @@
 import React from 'react';
-import Highcharts from 'highcharts/highstock'
-import More from 'highcharts/highcharts-more'
-import HighchartsReact from 'highcharts-react-official'
+import Highcharts from 'highcharts/highstock';
+import More from 'highcharts/highcharts-more';
+import HighchartsReact from 'highcharts-react-official';
 // import './ChartComponent.css';
 
 More(Highcharts)

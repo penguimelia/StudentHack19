@@ -52,7 +52,7 @@ class ArtistComponent extends Component {
   updateComponent() {
     const data = {
       f_artist_id: this.props.artist.artist_id,
-      page_size: 5,
+      page_size: 20,
       page: 1,
       s_track_rating: 'desc',
       f_has_lyrics: 1,

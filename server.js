@@ -4,6 +4,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const sw = require('stopword');
 const querystring = require('querystring');
+const simplegetlyrics = require('simple-get-lyrics');
 const fs = require('fs');
 const textcleaner = require('text-cleaner');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
@@ -33,19 +34,23 @@ const getLyrics = (artistName, songName) => {
 		var Response = request(url, (error, response, body) => {
 			var $ = cheerio.load(body);
 			var lyrics = '';
-			if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
-				var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
-				if (lyricsDiv && lyricsDiv.length > 0) {
-					var lyrics = lyricsDiv[2].data.substr(1)+"\n";
-					for(var index = 4; index < lyricsDiv.length; index+=2)
-					{
-						if (lyricsDiv[index].data) {
-							var line = lyricsDiv[index].data.substr(1)+"\n";
-							lyrics += line;
+			try {
+				if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
+					var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
+					if (lyricsDiv && lyricsDiv.length > 0) {
+						var lyrics = lyricsDiv[2].data.substr(1)+"\n";
+						for(var index = 4; index < lyricsDiv.length; index+=2)
+						{
+							if (lyricsDiv[index].data) {
+								var line = lyricsDiv[index].data.substr(1)+"\n";
+								lyrics += line;
+							}
 						}
 					}
+					lyrics = lyrics.slice(0,-2);
 				}
-				lyrics = lyrics.slice(0,-2);
+			} catch (error) {
+				console.log(url);
 			}
 			r(lyrics);
 		});
@@ -129,12 +134,12 @@ app.get('/api/topSongs/', (req, res) => {
       response.json().then(json => {
         const songs = json.message.body.track_list;
 
-        const promises = songs.map(song => getLyrics(song.track.artist_name, song.track.track_name));
+        const promises = songs.map(song => simplegetlyrics.search(song.track.artist_name, song.track.track_name));
 
         Promise.all(promises)
           .then(results => {
             songs.forEach((song, index) =>
-              lyrics[song.track.track_id] = sanitizeString(results[index])
+              lyrics[song.track.track_id] = sanitizeString(results[index].lyrics)
             );
             writeToCache(data, lyrics, songs);
             res.send({
