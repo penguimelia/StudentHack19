@@ -6,7 +6,10 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
     "start": "nodemon server.js",
-    "heroku-postbuild": "cd client && npm start && echo hi"
+    "heroku-postbuild": "cd client && npm build && npm start"
+  },
+  "engines": {
+    "node": ">=10.0.0",
   },
   "dependencies": {
     "azlyrics": "^2.0.0",
