@@ -30,7 +30,7 @@ const getLyrics = (artistName, songName) => {
 	return new Promise(r => {
 		var Response = request(url,(error,response,body) => {;
 			var $ = cheerio.load(body);
-			var lyrics;
+			var lyrics = '';
 			if ($(".col-xs-12.col-lg-8.text-center")[0].children[16]) {
 				var lyricsDiv = $(".col-xs-12.col-lg-8.text-center")[0].children[16].children;
 				var lyrics = lyricsDiv[2].data.substr(1)+"\n";
@@ -86,6 +86,7 @@ app.get('/api/topSongs/', (req, res) => {
       songs:  cache[data.f_artist_id].songs,
       lyrics: cache[data.f_artist_id].lyrics
     });
+    return;
   }
 
 
@@ -103,7 +104,9 @@ app.get('/api/topSongs/', (req, res) => {
 
         Promise.all(promises)
           .then(results => {
-            songs.forEach((song, index) => lyrics[song.track.track_id] = sw.removeStopwords(results[index].replace(new RegExp('\n', 'g'), ' ').split(' ')));
+            songs.forEach((song, index) =>
+              lyrics[song.track.track_id] = sw.removeStopwords(results[index].replace(/\n/g, ' ').replace(/ {1,}/g,' ').split(' '))
+            );
             writeToCache(data, lyrics, songs);
             res.send({
               songs:  songs,
