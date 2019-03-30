@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import querystring from 'querystring';
+import ReactLoading from 'react-loading';
 import ChartComponent from '../ChartComponent/ChartComponent.js';
 import './ArtistComponent.css';
 
@@ -57,16 +58,19 @@ class ArtistComponent extends Component {
     const { artist } = this.props;
     const { songs, lyrics } = this.state;
 
+    if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length)
+      return (<ReactLoading />);
+
     return (
       <div>
         <h2 className='artistName'>{artist.artist_name}</h2>
-        {songs && songs.length && songs.map(({ track }, index) => (
+        {songs.map(({ track }, index) => (
           <div key={track.track_id}>
             <p>{track.track_name} | {track.album_name}</p><br/>
           </div>
         ))}
 
-        {lyrics && Object.keys(lyrics).length && <ChartComponent lyrics={lyrics} artist={artist}/>}
+        {<ChartComponent lyrics={lyrics} artist={artist}/>}
       </div>
     )
   }
