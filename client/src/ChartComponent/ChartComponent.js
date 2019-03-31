@@ -2,6 +2,7 @@ import React from 'react';
 import Highcharts from 'highcharts/highstock';
 import More from 'highcharts/highcharts-more';
 import HighchartsReact from 'highcharts-react-official';
+import themes from './ChartComponentTheme';
 // import './ChartComponent.css';
 
 More(Highcharts)
@@ -35,6 +36,14 @@ const ChartComponent = ({ freq, artist }) => {
   const objArray = [];
   topFreq.forEach(pair => {
     objArray.push({name: pair[0], value: pair[1]});
+  });
+
+  Object.keys(themes.chartTheme).forEach(key => {
+    if (barChart.hasOwnProperty(key)) {
+      barChart[key] = Object.assign(themes.chartTheme[key], barChart[key]);
+    } else {
+      barChart[key] = themes.chartTheme[key];
+    }
   });
 
 
@@ -75,6 +84,14 @@ const ChartComponent = ({ freq, artist }) => {
       data: objArray
     }]
   };
+
+  Object.keys(themes.bubbleTheme).forEach(key => {
+    if (barChart.hasOwnProperty(key)) {
+      bubbleChart[key] = Object.assign(themes.bubbleTheme[key], bubbleChart[key]);
+    } else {
+      bubbleChart[key] = themes.bubbleTheme[key];
+    }
+  });
 
   return (
     <div>
