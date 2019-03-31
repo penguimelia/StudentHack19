@@ -47,7 +47,7 @@ const sanitizeString = (str) => {
   str = sw.removeStopwords(str.split(' '));
 
   const newString = sw.removeStopwords(str, ['doo', 'don', 'just', 'dont', 'aint', 'ive', 'its', '', 'ain']);
-  
+
   return newString;
 }
 
@@ -115,7 +115,7 @@ app.get('/api/topSongs/', (req, res) => {
     return;
   }
 
-
+	let songsThatFailedToLoad = 0;
   const lyrics = {};
   let url = songsSearchUrl;
   for (const key in data) url += (key + '=' + data[key] + '&');
@@ -130,6 +130,7 @@ app.get('/api/topSongs/', (req, res) => {
 					simplegetlyrics.search(song.track.artist_name, song.track.track_name)
 					.catch(err => {
 						console.log(url);
+						songsThatFailedToLoad++;
 						return '';
 					})
 				);
@@ -141,10 +142,12 @@ app.get('/api/topSongs/', (req, res) => {
             );
             writeToCache(data, lyrics, songs);
 						updatePastData(pastData, lyrics, songs, data.f_artist_id);
+						console.log('Songs that failed: ' + songsThatFailedToLoad);
             res.send({
               songs:  songs,
               lyrics: lyrics,
-							pastData: pastData
+							pastData: pastData,
+							songsThatFailedToLoad: songsThatFailedToLoad
             });
           })
           .catch(error => {

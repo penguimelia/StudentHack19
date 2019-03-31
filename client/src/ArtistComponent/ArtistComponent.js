@@ -60,6 +60,7 @@ class ArtistComponent extends Component {
             songs: json.songs,
             lyrics: json.lyrics,
             pastData: json.pastData,
+            songsThatFailedToLoad: json.songsThatFailedToLoad,
           });
         })
       })
@@ -80,7 +81,7 @@ class ArtistComponent extends Component {
 
   render() {
     const { artist } = this.props;
-    const { songs, lyrics, pastData } = this.state;
+    const { songs, lyrics, pastData, songsThatFailedToLoad } = this.state;
 
     if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length
         || songs[0].track.artist_id !== artist.artist_id)
@@ -89,12 +90,11 @@ class ArtistComponent extends Component {
     const lyricsFreq = getLyricsFreq(lyrics);
     const numberOfWords = lyricsFreq.reduce((total, pair) => pair[1] + total, 0);
     const numberOfUniqueWords = Object.keys(lyricsFreq).length;
-    const failedSongs = Object.keys(lyrics).filter(key => lyrics[key].length === 1);
 
     return (
       <div className='artistComponent'>
         <h2 className='artistName'>{artist.artist_name}</h2>
-        <p>{'Songs that failed: ' + failedSongs.length}</p>
+        {songsThatFailedToLoad ? <p>{'Succesfully loaded songs: ' + (50 - songsThatFailedToLoad)}</p> : null}
         <p>{'Number of words: ' + numberOfWords + ' | Number of unique words: ' + numberOfUniqueWords}</p>
         <div className='songsInfo'>
           {songs.map(({ track }, index) => (
