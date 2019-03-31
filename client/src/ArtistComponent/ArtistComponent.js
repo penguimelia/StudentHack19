@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import querystring from 'querystring';
 import ReactLoading from 'react-loading';
 import ChartComponent from '../ChartComponent/ChartComponent.js';
+import PastDataComponent from '../PastDataComponent/PastDataComponent.js';
 import './ArtistComponent.css';
 // import './ArtistComponent.css';
 import ReactWordcloud from 'react-wordcloud';
@@ -41,7 +42,8 @@ class ArtistComponent extends Component {
 
     this.state = {
       songs: [],
-      lyrics: {}
+      lyrics: {},
+      pastData: [],
     };
   }
 
@@ -52,7 +54,7 @@ class ArtistComponent extends Component {
   updateComponent() {
     const data = {
       f_artist_id: this.props.artist.artist_id,
-      page_size: 50,
+      page_size: 5,
       page: 1,
       s_track_rating: 'desc',
       f_has_lyrics: 1,
@@ -65,6 +67,7 @@ class ArtistComponent extends Component {
           this.setState({
             songs: json.songs,
             lyrics: json.lyrics,
+            pastData: json.pastData,
           });
         })
       })
@@ -85,7 +88,7 @@ class ArtistComponent extends Component {
 
   render() {
     const { artist } = this.props;
-    const { songs, lyrics } = this.state;
+    const { songs, lyrics, pastData } = this.state;
 
     if (!songs || !songs.length || !lyrics || !Object.keys(lyrics).length
         || songs[0].track.artist_id !== artist.artist_id)
@@ -95,6 +98,8 @@ class ArtistComponent extends Component {
     const numberOfWords = lyricsFreq.reduce((total, pair) => pair[1] + total, 0);
     const numberOfUniqueWords = Object.keys(lyricsFreq).length;
     const failedSongs = Object.keys(lyrics).filter(key => lyrics[key].length === 1);
+
+    console.log(pastData);
 
     return (
       <div className='artistComponent'>
@@ -110,6 +115,8 @@ class ArtistComponent extends Component {
         </div>
 
         {<ChartComponent freq={lyricsFreq} artist={artist}/>}
+        <br />
+        {pastData ? <PastDataComponent data={pastData} /> : null}
       </div>
     )
   }

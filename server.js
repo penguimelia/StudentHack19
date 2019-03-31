@@ -45,6 +45,39 @@ const sanitizeString = (str) => {
   return str;
 }
 
+const getPastData = (cache) => {
+	const data = [];
+	Object.keys(cache).forEach(key => {
+		const artist = {
+			id: cache[key].songs[0].track.artist_id,
+			name: cache[key].songs[0].track.artist_name,
+			lyrics: [],
+		};
+
+		Object.keys(cache[key].lyrics).forEach(lyricKey => {
+			artist.lyrics = artist.lyrics.concat(cache[key].lyrics[lyricKey]);
+		});
+
+		data.push(artist);
+	});
+
+	return data;
+}
+
+const updatePastData = (pastData, lyrics, songs, artistId) => {
+	const newEntry = {
+		id: artistId,
+		name: songs[0].track.artist_name,
+		lyrics: []
+	};
+
+	Object.keys(lyrics).forEach(lyricKey => {
+		newEntry.lyrics = newEntry.lyrics.concat(lyrics[lyricKey]);
+	});
+
+	pastData.push(newEntry);
+}
+
 app.get('/api/searchArtist/', (req, res) => {
   const data = req.query;
   let url = artistSearchUrl;
@@ -65,11 +98,13 @@ app.get('/api/searchArtist/', (req, res) => {
 app.get('/api/topSongs/', (req, res) => {
   const data = req.query;
   const cache = JSON.parse(fs.readFileSync('cache.txt', 'utf8'));
+	const pastData = getPastData(cache);
 
   if (cache[data.f_artist_id]) {
     res.send({
       songs:  cache[data.f_artist_id].songs,
-      lyrics: cache[data.f_artist_id].lyrics
+      lyrics: cache[data.f_artist_id].lyrics,
+			pastData: pastData,
     });
     return;
   }
@@ -99,9 +134,11 @@ app.get('/api/topSongs/', (req, res) => {
               lyrics[song.track.track_id] = sanitizeString(results[index].lyrics)
             );
             writeToCache(data, lyrics, songs);
+						updatePastData(pastData, lyrics, songs, data.f_artist_id);
             res.send({
               songs:  songs,
-              lyrics: lyrics
+              lyrics: lyrics,
+							pastData: pastData
             });
           })
           .catch(error => {
