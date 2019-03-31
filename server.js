@@ -28,7 +28,9 @@ const writeToCache = (data, lyrics, songs) => {
 
 const sanitizeString = (str) => {
 
-	if (!str) return [''];
+  if (!str) return [''];
+  //remove accents
+  str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   //remove new line symbols
   str = str.replace(/\n/g, ' ');
   //To lower case
@@ -41,8 +43,10 @@ const sanitizeString = (str) => {
   str = str.replace(/ {1,}/g,' ');
   //remove stopwords
   str = sw.removeStopwords(str.split(' '));
+
+  const newString = sw.removeStopwords(str, ['doo', 'don', 'just', 'dont', 'aint', 'ive', 'its', '', 'ain']);
   
-  return str;
+  return newString;
 }
 
 const getPastData = (cache) => {

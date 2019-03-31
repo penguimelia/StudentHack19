@@ -5,16 +5,8 @@ import ChartComponent from '../ChartComponent/ChartComponent.js';
 import PastDataComponent from '../PastDataComponent/PastDataComponent.js';
 import './ArtistComponent.css';
 // import './ArtistComponent.css';
-import ReactWordcloud from 'react-wordcloud';
 
 const baseUrl = '/api/topSongs?';
-
-const words = [
-  { text: "hello", value: 3 },
-  { text: "world", value: 12.5 },
-  { text: "github", value: 1 },
-  { text: "code", value: 1 }
-];
 
 const getLyricsFreq = lyrics => {
   const freq = {};
@@ -54,7 +46,7 @@ class ArtistComponent extends Component {
   updateComponent() {
     const data = {
       f_artist_id: this.props.artist.artist_id,
-      page_size: 5,
+      page_size: 50,
       page: 1,
       s_track_rating: 'desc',
       f_has_lyrics: 1,
