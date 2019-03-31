@@ -5,6 +5,7 @@ const sw = require('stopword');
 const querystring = require('querystring');
 const simplegetlyrics = require('simple-get-lyrics');
 const fs = require('fs');
+const path = require('path');
 const textcleaner = require('text-cleaner');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
@@ -166,5 +167,14 @@ app.post('/api/world', (req, res) => {
     `I received your POST request. This is what you sent me: ${req.body.post}`,
   );
 });
+
+if (process.env.NODE_ENV === 'production') {
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  // Handle React routing, return all requests to React app
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
