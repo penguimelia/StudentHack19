@@ -28,7 +28,9 @@ const writeToCache = (data, lyrics, songs) => {
 
 const sanitizeString = (str) => {
 
-  if (!str) return [''];
+  if (!str) {
+    str = '';
+  };
   //remove accents
   str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   //remove new line symbols
