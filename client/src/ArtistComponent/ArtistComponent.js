@@ -91,8 +91,6 @@ class ArtistComponent extends Component {
     const numberOfUniqueWords = Object.keys(lyricsFreq).length;
     const failedSongs = Object.keys(lyrics).filter(key => lyrics[key].length === 1);
 
-    console.log(pastData);
-
     return (
       <div className='artistComponent'>
         <h2 className='artistName'>{artist.artist_name}</h2>

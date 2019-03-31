@@ -8,6 +8,10 @@ import theme from './PastDataComponentTheme';
 More(Highcharts)
 
 const PastDataComponent = ({ data }) => {
+  const numberOfWords = data.map(artist => artist.lyrics.length);
+  const uniqueWords = data.map(artist => [...new Set(artist.lyrics)].length);
+  const score = data.map((artist, ind) => Math.round((uniqueWords[ind] / numberOfWords[ind]) * 1000));
+
   const barChart = {
     chart: {
       type: 'column',
@@ -49,14 +53,15 @@ const PastDataComponent = ({ data }) => {
     },
     series: [{
       name: 'Total number of words',
-      data: data.map(artist => artist.lyrics.length),
+      data: numberOfWords,
     }, {
       name: 'Unique words',
-      data: data.map(artist => [...new Set(artist.lyrics)].length),
+      data: uniqueWords,
+    }, {
+      name: 'Score',
+      data: score,
     }],
   };
-
-  console.log(theme);
 
   Object.keys(theme).forEach(key => {
     if (barChart.hasOwnProperty(key)) {
