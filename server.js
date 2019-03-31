@@ -5,6 +5,7 @@ const sw = require('stopword');
 const querystring = require('querystring');
 const simplegetlyrics = require('simple-get-lyrics');
 const fs = require('fs');
+const path = require('path');
 const textcleaner = require('text-cleaner');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
