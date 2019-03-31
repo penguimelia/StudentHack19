@@ -88,6 +88,12 @@ class ArtistComponent extends Component {
         || songs[0].track.artist_id !== artist.artist_id)
       return (<ReactLoading />);
 
+    const storageData = JSON.parse(localStorage.getItem('artistsIds') || '[]');
+    if (!storageData.includes(artist.artist_id)) {
+      storageData.push(artist.artist_id);
+      localStorage.setItem('artistsIds', JSON.stringify(storageData));
+    }
+
     const lyricsFreq = getLyricsFreq(lyrics);
     const numberOfWords = lyricsFreq.reduce((total, pair) => pair[1] + total, 0);
     const numberOfUniqueWords = Object.keys(lyricsFreq).length;
@@ -109,7 +115,7 @@ class ArtistComponent extends Component {
         <br />
         {<SentimentsComponent data={songs} />}
         <br />
-        {pastData ? <PastDataComponent data={pastData} /> : null}
+        {pastData ? <PastDataComponent data={pastData} storageData={storageData} /> : null}
       </div>
     )
   }

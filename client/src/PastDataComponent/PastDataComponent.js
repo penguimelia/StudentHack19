@@ -7,7 +7,8 @@ import theme from './PastDataComponentTheme';
 
 More(Highcharts)
 
-const PastDataComponent = ({ data }) => {
+const PastDataComponent = ({ data, storageData }) => {
+  data = data.filter(artist => storageData.includes(Number(artist.id)));
   const numberOfWords = data.map(artist => artist.lyrics.length);
   const uniqueWords = data.map(artist => [...new Set(artist.lyrics)].length);
   const score = data.map((artist, ind) => Math.round((uniqueWords[ind] / numberOfWords[ind]) * 1000));
