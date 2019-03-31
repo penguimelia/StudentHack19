@@ -3,6 +3,7 @@ import querystring from 'querystring';
 import ReactLoading from 'react-loading';
 import ChartComponent from '../ChartComponent/ChartComponent.js';
 import PastDataComponent from '../PastDataComponent/PastDataComponent.js';
+import SentimentsComponent from '../SentimentsComponent/SentimentsComponent.js';
 import './ArtistComponent.css';
 // import './ArtistComponent.css';
 
@@ -105,6 +106,8 @@ class ArtistComponent extends Component {
         </div>
 
         {<ChartComponent freq={lyricsFreq} artist={artist}/>}
+        <br />
+        {<SentimentsComponent data={songs} />}
         <br />
         {pastData ? <PastDataComponent data={pastData} /> : null}
       </div>

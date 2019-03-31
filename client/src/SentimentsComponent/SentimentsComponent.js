@@ -2,33 +2,26 @@ import React from 'react';
 import Highcharts from 'highcharts/highstock';
 import More from 'highcharts/highcharts-more';
 import HighchartsReact from 'highcharts-react-official';
-import theme from './PastDataComponentTheme';
-// import './PastDataComponent.css';
+import theme from './SentimentsComponentTheme';
 
 More(Highcharts)
 
-const PastDataComponent = ({ data }) => {
-  const numberOfWords = data.map(artist => artist.lyrics.length);
-  const uniqueWords = data.map(artist => [...new Set(artist.lyrics)].length);
-  const score = data.map((artist, ind) => Math.round((uniqueWords[ind] / numberOfWords[ind]) * 1000));
-
+const SentimentsComponent = ({ data }) => {
+  const filteredData = data.filter(song => song.sentiment.score !== 0);
   const barChart = {
     chart: {
       type: 'column',
       scrollablePlotArea: true,
     },
     title: {
-      text: 'Artists comparison',
+      text: 'Songs Positivity',
     },
     xAxis: {
-      categories: data.map(artist => artist.name),
+      categories: filteredData.map(song => song.track.track_name),
       crosshair: true,
     },
     yAxis: {
-      min: 0,
-      title: {
-        text: 'Total number of words',
-      },
+      enabled: false,
     },
     tooltip: {
       headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
@@ -52,14 +45,8 @@ const PastDataComponent = ({ data }) => {
       }
     },
     series: [{
-      name: 'Total Number of Words',
-      data: numberOfWords,
-    }, {
-      name: 'Unique Words',
-      data: uniqueWords,
-    }, {
-      name: 'Lexical Richness',
-      data: score,
+      name: 'Happiness\' score',
+      data: filteredData.map(song => Math.round(song.sentiment.score * 100))
     }],
   };
 
@@ -82,4 +69,4 @@ const PastDataComponent = ({ data }) => {
   );
 };
 
-export default PastDataComponent;
+export default SentimentsComponent;

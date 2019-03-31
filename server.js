@@ -7,6 +7,7 @@ const simplegetlyrics = require('simple-get-lyrics');
 const fs = require('fs');
 const path = require('path');
 const textcleaner = require('text-cleaner');
+const { SentimentAnalyzer } = require('node-nlp');
 const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
@@ -138,18 +139,26 @@ app.get('/api/topSongs/', (req, res) => {
 
         Promise.all(promises)
           .then(results => {
-            songs.forEach((song, index) =>
-              lyrics[song.track.track_id] = sanitizeString(results[index].lyrics)
-            );
-            writeToCache(data, lyrics, songs);
-						updatePastData(pastData, lyrics, songs, data.f_artist_id);
-						console.log('Songs that failed: ' + songsThatFailedToLoad);
-            res.send({
-              songs:  songs,
-              lyrics: lyrics,
-							pastData: pastData,
-							songsThatFailedToLoad: songsThatFailedToLoad
+						const sentiment = new SentimentAnalyzer({ language: 'en' });
+            songs.forEach((song, index) => {
+              lyrics[song.track.track_id] = sanitizeString(results[index].lyrics);
             });
+
+						const sentimentPromises = songs.map(song => sentiment.getSentiment(lyrics[song.track.track_id].join(' ')));
+
+						Promise.all(sentimentPromises)
+							.then(resultingSentiments => {
+								resultingSentiments.forEach((sent, idx) => songs[idx].sentiment = sent);
+								writeToCache(data, lyrics, songs);
+								updatePastData(pastData, lyrics, songs, data.f_artist_id);
+
+								res.send({
+		              songs:  songs,
+		              lyrics: lyrics,
+									pastData: pastData,
+									songsThatFailedToLoad: songsThatFailedToLoad
+		            });
+							})
           })
           .catch(error => {
             console.log(error);
