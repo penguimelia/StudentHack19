@@ -12,7 +12,7 @@ const artistSearchUrl = 'https://api.musixmatch.com/ws/1.1/artist.search?';
 const songsSearchUrl = 'https://api.musixmatch.com/ws/1.1/track.search?';
 const app = express();
 const port = process.env.PORT || 5000;
-const apiKey = process.env.API_KEY || '52b9f0ea425b6af5aa36aecc45965535';
+const apiKey = process.env.API_KEY || '27039d2c62c1185c4c220751b15ea31d';
 
 const writeToCache = (data, lyrics, songs) => {
   const cache = JSON.parse(fs.readFileSync('cache.txt', 'utf8'));

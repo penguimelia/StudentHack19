@@ -14,7 +14,7 @@ const SentimentsComponent = ({ data }) => {
       scrollablePlotArea: true,
     },
     title: {
-      text: 'Songs Positivity',
+      text: 'Songs Sentiment',
     },
     xAxis: {
       categories: filteredData.map(song => song.track.track_name),
@@ -45,7 +45,7 @@ const SentimentsComponent = ({ data }) => {
       }
     },
     series: [{
-      name: 'Happiness\' score',
+      name: 'Sentiment score',
       data: filteredData.map(song => Math.round(song.sentiment.score * 100))
     }],
   };
